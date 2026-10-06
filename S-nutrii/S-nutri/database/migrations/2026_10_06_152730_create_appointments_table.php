@@ -1,0 +1,91 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('appointments', function (Blueprint $table) {
+            $table->id();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Cliente
+            |--------------------------------------------------------------------------
+            */
+
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Información de la cita
+            |--------------------------------------------------------------------------
+            */
+
+            $table->date('appointment_date');
+
+            $table->time('appointment_time');
+
+            $table->string('reason')
+                ->nullable();
+
+            $table->text('notes')
+                ->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Estado de la cita
+            |--------------------------------------------------------------------------
+            |
+            | pending   = pendiente
+            | confirmed = confirmada
+            | suspended = suspendida
+            | cancelled = cancelada
+            |
+            */
+
+            $table->string('status')
+                ->default('pending');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Motivo de suspensión/cancelación
+            |--------------------------------------------------------------------------
+            */
+
+            $table->text('status_notes')
+                ->nullable();
+
+            $table->timestamps();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Índices
+            |--------------------------------------------------------------------------
+            */
+
+            $table->index([
+                'appointment_date',
+                'appointment_time'
+            ]);
+
+            $table->index('status');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('appointments');
+    }
+};
